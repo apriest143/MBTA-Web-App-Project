@@ -1,4 +1,7 @@
+import json
 import os
+import pprint
+import urllib.requestS
 
 from dotenv import load_dotenv
 
@@ -22,26 +25,29 @@ def get_json(url: str) -> dict:
     Both get_lat_lng() and get_nearest_station() might need to use this function.
     """
     pass
-import urllib.request
+
+
 import json
+import os
 import pprint
+import urllib.request
 
-url = "https://api.coindesk.com/v1/bpi/currentprice.json"
+from dotenv import load_dotenv
 
-with urllib.request.urlopen(url) as response:
-    response_text = response.read().decode("utf-8")
-    # print(response_text)
-    # print(type(response_text))
-    data = json.loads(response_text)
-    # print(data)
-    # print(type(data))
-    # pprint.pprint(data)
+load_dotenv()
 
-# price in USD
+MAPBOX_TOKEN = os.getenv("MAPBOX_TOKEN")
+MAPBOX_BASE_URL = "https://api.mapbox.com/geocoding/v5/mapbox.places"
 
-# pprint.pprint(data['bpi'])
-price_in_usd = data['bpi']['USD']['rate_float']
-print(price_in_usd)
+query = "Babson College"
+query = query.replace(" ", "%20") # In URL encoding, spaces are typically replaced with "%20". You can also use `urllib.parse.quote` function. 
+url=f"{MAPBOX_BASE_URL}/{query}.json?access_token={MAPBOX_TOKEN}&types=poi"
+print(url) # Try this URL in your browser first
+
+with urllib.request.urlopen(url) as resp:
+    response_text = resp.read().decode("utf-8")
+    response_data = json.loads(response_text)
+    pprint.pprint(response_data)
 
 def get_lat_lng(place_name: str) -> tuple[str, str]:
     """
