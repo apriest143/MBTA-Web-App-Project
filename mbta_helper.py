@@ -1,7 +1,7 @@
 import json
 import os
 import pprint
-import urllib.requestS
+import urllib.request
 
 from dotenv import load_dotenv
 
@@ -27,27 +27,7 @@ def get_json(url: str) -> dict:
     pass
 
 
-import json
-import os
-import pprint
-import urllib.request
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
-MAPBOX_TOKEN = os.getenv("MAPBOX_TOKEN")
-MAPBOX_BASE_URL = "https://api.mapbox.com/geocoding/v5/mapbox.places"
-
-query = "Babson College"
-query = query.replace(" ", "%20") # In URL encoding, spaces are typically replaced with "%20". You can also use `urllib.parse.quote` function. 
-url=f"{MAPBOX_BASE_URL}/{query}.json?access_token={MAPBOX_TOKEN}&types=poi"
-print(url) # Try this URL in your browser first
-
-with urllib.request.urlopen(url) as resp:
-    response_text = resp.read().decode("utf-8")
-    response_data = json.loads(response_text)
-    pprint.pprint(response_data)
 
 def get_lat_lng(place_name: str) -> tuple[str, str]:
     """
@@ -55,7 +35,21 @@ def get_lat_lng(place_name: str) -> tuple[str, str]:
 
     See https://docs.mapbox.com/api/search/geocoding/ for Mapbox Geocoding API URL formatting requirements.
     """
-    pass
+    
+    query = place_name.replace(" ", "%20") # In URL encoding, spaces are typically replaced with "%20". You can also use `urllib.parse.quote` function. 
+    url=f"{MAPBOX_BASE_URL}/{query}.json?access_token={MAPBOX_TOKEN}&types=poi"
+    print(url) # Try this URL in your browser first
+
+    with urllib.request.urlopen(url) as resp:
+        response_text = resp.read().decode("utf-8")
+        response_data = json.loads(response_text)
+       # pprint.pprint(response_data)
+        points = response_data['features'][0]['geometry']['coordinates']
+        print(points)
+        latitude = points[0]
+        longitude = points[1]
+        print(longitude)
+    return points
 
 
 def get_nearest_station(latitude: str, longitude: str) -> tuple[str, bool]:
@@ -64,6 +58,17 @@ def get_nearest_station(latitude: str, longitude: str) -> tuple[str, bool]:
 
     See https://api-v3.mbta.com/docs/swagger/index.html#/Stop/ApiWeb_StopController_index for URL formatting requirements for the 'GET /stops' API.
     """
+    query = f"/data/{latitude}/attributes/latitude/data/{longitude}/attributes/longitude"
+    url=f"{MBTA_BASE_URL}/{query}.json?access_token={MBTA_API_KEY}&types=poi"
+    print(url) # Try this URL in your browser first
+
+    with urllib.request.urlopen(url) as resp:
+        response_text = resp.read().decode("utf-8")
+        response_data = json.loads(response_text)
+        pprint.pprint(response_data)
+       # points = response_data['features'][0]['geometry']['coordinates']
+       # print(points)
+       
     pass
 
 
@@ -80,6 +85,8 @@ def main():
     """
     You should test all the above functions here
     """
+    place_name = input("Enter the name of your place:")
+    get_nearest_station(get_lat_lng(place_name))
     pass
 
 
