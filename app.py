@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request
+from flask import render_template
 from mbta_helper import find_stop_near
 from markupsafe import escape
 
@@ -29,7 +30,7 @@ def index():
 
 #This function grabs the location submitted by the user in the previous webpage. It stores this name as place_name.
 #it then runs the find_nearest_mbta function using place_name and stores the location that function returns as result
-#It then checks to see
+#It then checks to see if the output is correct. If there are any errors it will prompt the user to return to the beginning
 @app.route('/nearest_mbta', methods=['POST'])
 def nearest_mbta():
     place_name = request.form.get('place_name')  # Get the place name from form data
@@ -39,7 +40,7 @@ def nearest_mbta():
     
     if result:
         station_name, accessibility = result['station_name'], result['accessible']
-        return render_template('mbta_station.html', station=station_name, accessible=accessibility)
+        return render_template('index.html', station=station_name, accessible=accessibility)
     else:
         # Render an error page if something went wrong
         return '''
