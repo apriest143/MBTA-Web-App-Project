@@ -49,7 +49,7 @@ def get_lat_lng(place_name: str) -> tuple[str, str]:
         latitude = points[0]
         longitude = points[1]
         print(longitude)
-    return points
+    return (latitude, longitude)
 
 
 def get_nearest_station(latitude: str, longitude: str) -> tuple[str, bool]:
@@ -66,7 +66,7 @@ def get_nearest_station(latitude: str, longitude: str) -> tuple[str, bool]:
         response_text = resp.read().decode("utf-8")
         response_data = json.loads(response_text)
         pprint.pprint(response_data)
-       # points = response_data['features'][0]['geometry']['coordinates']
+        points = response_data['features'][0]['geometry']['coordinates']
        # print(points)
        
     pass
