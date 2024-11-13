@@ -24,7 +24,7 @@ MBTA_BASE_URL = "https://api-v3.mbta.com/stops"
 
 #     Both get_lat_lng() and get_nearest_station() might need to use this function.
 #     """
-#     pass
+#     pass 
 
 
 
@@ -40,19 +40,18 @@ def get_lat_lng(place_name: str) -> tuple[str, str]:
     url=f"{MAPBOX_BASE_URL}/{query}.json?access_token={MAPBOX_TOKEN}&types=poi"
     print(url) # Try this URL in your browser first
 
-    try:
-        with urllib.request.urlopen(url) as resp:
-            response_text = resp.read().decode("utf-8")
-            response_data = json.loads(response_text)
-        # pprint.pprint(response_data)
-            points = response_data['features'][0]['geometry']['coordinates']
-            print(points)
-            # FOR SOME REASON THE POINTS ARE WRONG (LONG GOES BEFORE LAT SHOULD BE INVERSE)
+    with urllib.request.urlopen(url) as resp:
+        response_text = resp.read().decode("utf-8")
+        response_data = json.loads(response_text)
+       # pprint.pprint(response_data)
+        points = response_data['features'][0]['geometry']['coordinates']
+        print(points)
+        # FOR SOME REASON THE POINTS ARE WRONG (LONG GOES BEFORE LAT SHOULD BE INVERSE)
 
-            latitude = points[1]
-            longitude = points[0]
-            print(latitude, longitude)
-        return latitude, longitude
+        latitude = points[1]
+        longitude = points[0]
+        print(latitude, longitude)
+    return latitude, longitude
 
 
 def get_nearest_station(latitude: float, longitude: float) -> tuple[str, bool]:
