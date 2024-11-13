@@ -40,18 +40,19 @@ def get_lat_lng(place_name: str) -> tuple[str, str]:
     url=f"{MAPBOX_BASE_URL}/{query}.json?access_token={MAPBOX_TOKEN}&types=poi"
     print(url) # Try this URL in your browser first
 
-    with urllib.request.urlopen(url) as resp:
-        response_text = resp.read().decode("utf-8")
-        response_data = json.loads(response_text)
-       # pprint.pprint(response_data)
-        points = response_data['features'][0]['geometry']['coordinates']
-        print(points)
-        # FOR SOME REASON THE POINTS ARE WRONG (LONG GOES BEFORE LAT SHOULD BE INVERSE)
+    try:
+        with urllib.request.urlopen(url) as resp:
+            response_text = resp.read().decode("utf-8")
+            response_data = json.loads(response_text)
+        # pprint.pprint(response_data)
+            points = response_data['features'][0]['geometry']['coordinates']
+            print(points)
+            # FOR SOME REASON THE POINTS ARE WRONG (LONG GOES BEFORE LAT SHOULD BE INVERSE)
 
-        latitude = points[1]
-        longitude = points[0]
-        print(latitude, longitude)
-    return latitude, longitude
+            latitude = points[1]
+            longitude = points[0]
+            print(latitude, longitude)
+        return latitude, longitude
 
 
 def get_nearest_station(latitude: float, longitude: float) -> tuple[str, bool]:
@@ -61,9 +62,9 @@ def get_nearest_station(latitude: float, longitude: float) -> tuple[str, bool]:
     See https://api-v3.mbta.com/docs/swagger/index.html#/Stop/ApiWeb_StopController_index for URL formatting requirements for the 'GET /stops' API.
     """
     radius = 100
-    query = f"?filter[latitude]={latitude}&filter[longitude]={longitude}/sort=-distance"
+    query = f"?filter[latitude]={latitude}&filter[longitude]={longitude}&filter[radius]=10"
     url=f"{MBTA_BASE_URL}{query}=access_token={MBTA_API_KEY}"
-    print(url) # Try this URL in your browser first
+    print(url) # Try this URL in your browser first'
 
     with urllib.request.urlopen(url) as resp:
         response_text = resp.read().decode("utf-8")
@@ -73,26 +74,32 @@ def get_nearest_station(latitude: float, longitude: float) -> tuple[str, bool]:
     #   points = response_data['features'][0]['geometry']['coordinates']
        # print(points)b
         if "data" in response_data:
-            stop  = response_data["data"][0]
+            result  = response_data["data"][0]
             #print (stop)
-            station = stop["attributes"]["name"]
-            wheelchair = stop["attributes"]["wheelchair_boarding"]
-            if wheelchair == 1:
-                wheelchair = "has wheelchair boarding"
-            if wheelchair == 0:
-                wheelchair = "does not have wheelchair boarding"
+            station_name = result["attributes"]["name"]
+            accessible = result["attributes"]["wheelchair_boarding"]
+            if accessible == 1:
+                accessible = "has wheelchair boarding"
+            if accessible == 0:
+                accessible = "does not have wheelchair boarding"
             #print (station)
             #print (wheelchair)
-            return station, wheelchair
+            return station_name, accessible
 
 
-def find_stop_near(place_name: str) -> tuple[str, bool]:
+def find_stop_near(place_name: str) -> tuple[str, str]:
     """
     Given a place name or address, return the nearest MBTA stop and whether it is wheelchair accessible.
 
     This function might use all the functions above.
     """
-    pass
+    #place_name = input("Enter the name of your place:")
+    latitude, longitude = get_lat_lng(place_name)
+    response = get_nearest_station(latitude, longitude)
+    print (response)
+    return response
+    
+      #  station_name, accessibility = result['station_name'], result['accessible']
 
 
 def main():

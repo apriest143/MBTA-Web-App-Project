@@ -33,14 +33,31 @@ def index():
 #It then checks to see if the output is correct. If there are any errors it will prompt the user to return to the beginning
 @app.route('/nearest_mbta', methods=['POST'])
 def nearest_mbta():
-    place_name = request.form.get('place_name')  # Get the place name from form data
+    place_name = request.form.get('place')  # Get the place name from form data
     
     # Use the helper function to call the find_stop_near function and store the output as result
     result = find_stop_near(place_name)
-    
     if result:
-        station_name, accessibility = result['station_name'], result['accessible']
+        station_name, accessibility = result
+        if accessibility == 1:
+            accessibility = 'Yes'
+        if accessibility == 2:
+            accessibility = 'No'
         return render_template('index.html', station=station_name, accessible=accessibility)
+        # return  '''
+        
+        # <!doctype html>
+        # <html>
+        #     <head><title>Result</title></head>
+        #     <body>
+        #         <h1>We found your station!</h1>
+        #         <p>The nearest station is: {{ station_name }}</p>
+        #         <p>Accessibility options: {{ accessibility }}</p>
+        #         <a href="/">Go back to the home page</a>
+        #     </body>
+        # </html>
+        # '''
+    #render_template('result.html', station=station_name, accessible=accessibility)
     else:
         # Render an error page if something went wrong
         return '''
