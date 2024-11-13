@@ -17,14 +17,14 @@ MAPBOX_BASE_URL = "https://api.mapbox.com/geocoding/v5/mapbox.places"
 MBTA_BASE_URL = "https://api-v3.mbta.com/stops"
 
 
-# A little bit of scaffolding if you want to use it
-def get_json(url: str) -> dict:
-    """
-    Given a properly formatted URL for a JSON web API request, return a Python JSON object containing the response to that request.
+# # A little bit of scaffolding if you want to use it
+# def get_json(url: str) -> dict:
+#     """
+#     Given a properly formatted URL for a JSON web API request, return a Python JSON object containing the response to that request.
 
-    Both get_lat_lng() and get_nearest_station() might need to use this function.
-    """
-    pass
+#     Both get_lat_lng() and get_nearest_station() might need to use this function.
+#     """
+#     pass
 
 
 
@@ -48,28 +48,29 @@ def get_lat_lng(place_name: str) -> tuple[str, str]:
         print(points)
         latitude = points[0]
         longitude = points[1]
-        print(longitude)
+        #print(longitude)
     return (latitude, longitude)
 
 
-def get_nearest_station(latitude: str, longitude: str) -> tuple[str, bool]:
+def get_nearest_station(latitude: float, longitude: float) -> tuple[str, bool]:
     """
     Given latitude and longitude strings, return a (station_name, wheelchair_accessible) tuple for the nearest MBTA station to the given coordinates.
 
     See https://api-v3.mbta.com/docs/swagger/index.html#/Stop/ApiWeb_StopController_index for URL formatting requirements for the 'GET /stops' API.
     """
-    query = f"/data/{latitude}/attributes/latitude/data/{longitude}/attributes/longitude"
-    url=f"{MBTA_BASE_URL}/{query}.json?access_token={MBTA_API_KEY}&types=poi"
+    query = f"/stops?filter[latitude]={latitude}&filter[longitude]={longitude}&filter "
+    
+    url=f"{MBTA_BASE_URL}{query}.json?access_token={MBTA_API_KEY}&types=poi"
     print(url) # Try this URL in your browser first
 
     with urllib.request.urlopen(url) as resp:
         response_text = resp.read().decode("utf-8")
         response_data = json.loads(response_text)
         pprint.pprint(response_data)
-        points = response_data['features'][0]['geometry']['coordinates']
+    #   points = response_data['features'][0]['geometry']['coordinates']
        # print(points)
        
-    pass
+    return
 
 
 def find_stop_near(place_name: str) -> tuple[str, bool]:
@@ -86,7 +87,9 @@ def main():
     You should test all the above functions here
     """
     place_name = input("Enter the name of your place:")
-    get_nearest_station(get_lat_lng(place_name))
+    coords = get_lat_lng(place_name)
+    print (coords)
+    get_nearest_station(coords)
     pass
 
 
