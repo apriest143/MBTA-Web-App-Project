@@ -2,7 +2,6 @@ import json
 import os
 import pprint
 import urllib.request
-
 from dotenv import load_dotenv
 
 # Load environment variables
